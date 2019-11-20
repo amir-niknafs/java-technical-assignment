@@ -14,6 +14,6 @@ public class BuyOneGetOneFree implements Discount {
 
     @Override
     public BigDecimal apply() {
-        return null;//TODO
+        return item.price();
     }
 }

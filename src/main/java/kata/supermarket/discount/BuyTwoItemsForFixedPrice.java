@@ -17,6 +17,7 @@ public class BuyTwoItemsForFixedPrice implements Discount {
 
     @Override
     public BigDecimal apply() {
-        return null;//TODO
+        //assumes two items subtotal is greater than discount
+        return item1.price().add(item2.price().subtract(fixedPrice));
     }
 }

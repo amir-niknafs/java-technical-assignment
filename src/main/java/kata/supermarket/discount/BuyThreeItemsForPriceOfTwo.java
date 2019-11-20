@@ -3,6 +3,7 @@ package kata.supermarket.discount;
 import kata.supermarket.Item;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 public class BuyThreeItemsForPriceOfTwo implements Discount {
 
@@ -16,6 +17,10 @@ public class BuyThreeItemsForPriceOfTwo implements Discount {
 
     @Override
     public BigDecimal apply() {
-        return null;//TODO
+        //Assuming the cheapest Item is free
+        Item cheapest = item1.price().compareTo(item2.price()) < 0 ? item1 : item2;
+        cheapest = cheapest.price().compareTo(item3.price()) < 0 ? cheapest : item3;
+
+        return cheapest.price();
     }
 }
