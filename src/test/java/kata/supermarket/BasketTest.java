@@ -1,5 +1,8 @@
 package kata.supermarket;
 
+import kata.supermarket.discount.BuyOneGetOneFree;
+import kata.supermarket.discount.BuyThreeItemsForPriceOfTwo;
+import kata.supermarket.discount.Discount;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -7,6 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Stream;
 
@@ -32,6 +36,35 @@ class BasketTest {
                 multipleItemsPricedByWeight()
         );
     }
+
+    @DisplayName("basket provides its total value when containing products with discounts...")
+    @MethodSource
+    @ParameterizedTest(name = "{0}")
+    void basketProvidesTotalValueWithDiscounts(String description, String expectedTotal, Iterable<Item> items, Iterable<Discount> discounts) {
+        final Basket basket = new Basket();
+        items.forEach(basket::add);
+        discounts.forEach(basket::addDiscount);
+        assertEquals(new BigDecimal(expectedTotal), basket.total());
+    }
+
+    static Stream<Arguments> basketProvidesTotalValueWithDiscounts() {
+        return Stream.of(
+                multipleItemsWithADiscount(), multipleItemsWithABuyThreeForPriceOfTwo()
+        );
+    }
+
+    private static Arguments multipleItemsWithADiscount() {
+        return Arguments.of("two unit items with buy one get one free discount", "0.49",
+                Arrays.asList(aPintOfMilk(), aPintOfMilk()),
+                Collections.singleton(new BuyOneGetOneFree(aPintOfMilk())));
+    }
+
+    private static Arguments multipleItemsWithABuyThreeForPriceOfTwo() {
+        return Arguments.of("Buy three items with buy three for price of two discount should reduce the total by the price of the cheapest item", "1.74",
+                Arrays.asList(aPintOfMilk(), aPintOfMilk(), twoFiftyGramsOfAmericanSweets()),
+                Collections.singleton(new BuyThreeItemsForPriceOfTwo(aPintOfMilk(), aPintOfMilk(), twoFiftyGramsOfAmericanSweets())));
+    }
+
 
     private static Arguments aSingleItemPricedByWeight() {
         return Arguments.of("a single weighed item", "1.25", Collections.singleton(twoFiftyGramsOfAmericanSweets()));
